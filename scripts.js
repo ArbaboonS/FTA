@@ -149,18 +149,20 @@ function addZones(position) {
 }
 
 // Update the progress bar based on the distance travelled
-function updateProgress(value) {
-  const circle = document.querySelector('.progress-circle .progress');
-  const radius = circle.r.baseVal.value;
-  const circumference = radius * 2 * Math.PI;
-  
-  const offset = circumference - (value / 100) * circumference;
-  circle.style.strokeDashoffset = offset;
+function updateProgressBar() {
+    const progressPercentage = (distance / dailyGoal) * 100;
+    document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+    if (progressPercentage >= 100) {
+        webApp.showAlert('Daily goal achieved! Good job!');
+    }
 }
 
-// Call this function with the current progress percentage
-updateProgress(75); // Example with 75%
-``
+window.onload = function() {
+    initMap();
+    attachEventListeners();
+    updateProgressBar();
+};
+
 // Function to attach event listeners to buttons and selections
 function attachEventListeners() {
     // Attaching event listeners to sneaker type selection
