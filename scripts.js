@@ -24,19 +24,29 @@ const sneakerTypes = {
     Trainer: { optimalSpeed: { min: 1, max: 20 }, gstReturn: 5.5 }
 };
 
-// Initialize the map with Leaflet
+// Function to initialize the map
 function initMap() {
+    if (typeof(L) === 'undefined') {
+        console.error('Leaflet library is not loaded.');
+        return;
+    }
+    const mapElement = document.getElementById('map');
+    if (!mapElement) {
+        console.error('"map" element not found in the DOM.');
+        return;
+    }
     map = L.map('map').setView([0, 0], 2);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
+    console.log('Map initialized.');
 }
 
 // Select sneaker type and highlight the chosen type
 function selectSneakerType(type) {
     sneakerType = type;
     document.querySelectorAll('.sneaker-type').forEach(el => el.classList.remove('active'));
-    document.querySelector(`.sneaker-type:nth-child(${Object.keys(sneakerTypes).indexOf(type) + 1})`).classList.add('active');
+    document.querySelector(`.sneaker-type[data-type="${type}"]`).classList.add('active');
     webApp.showAlert(`You selected ${type} sneaker`);
 }
 
@@ -44,33 +54,41 @@ function selectSneakerType(type) {
 function selectActivityMode(mode) {
     activityMode = mode;
     document.querySelectorAll('.mode-select').forEach(el => el.classList.remove('active'));
-    document.querySelector(`.mode-select:nth-child(${['Walking', 'Running', 'Group Running', 'Cycling'].indexOf(mode) + 1})`).classList.add('active');
+    document.querySelector(`.mode-select[data-mode="${mode}"]`).classList.add('active');
     webApp.showAlert(`You selected ${mode} mode`);
 }
 
-// Start tracking activity using geolocation
+// Start tracking the user's position
 function startTracking() {
-    if (navigator.geolocation) {
-        webApp.showAlert("Tracking started");
-        startTime = new Date().getTime();
-        watchId = navigator.geolocation.watchPosition(geoSuccess, geoError, { enableHighAccuracy: true });
-    } else {
+    if (!navigator.geolocation) {
         webApp.showAlert("Geolocation is not supported by this browser.");
+        return;
     }
+
+    webApp.showAlert("Tracking started");
+    startTime = Date.now();
+
+    watchId = navigator.geolocation.watchPosition(geoSuccess, geoError, {
+        enableHighAccuracy: true,
+        maximumAge: 1000,
+        timeout: 5000
+    });
 }
 
-// Stop tracking activity
+// Stop tracking the user's position
 function stopTracking() {
     if (watchId) {
         navigator.geolocation.clearWatch(watchId);
+        watchId = null;
         webApp.showAlert("Tracking stopped");
+    } else {
+        webApp.showAlert("No tracking to stop");
     }
 }
 
-// Success callback for geolocation
+// Successfully retrieved user position
 function geoSuccess(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
+    const { latitude, longitude } = position.coords;
     const newPosition = [latitude, longitude];
 
     if (!marker) {
@@ -83,9 +101,16 @@ function geoSuccess(position) {
     updateStats(newPosition);
 }
 
-// Error callback for geolocation
+// Handle geolocation errors
 function geoError(error) {
-    webApp.showAlert(`Error occurred. Error code: ${error.code}`);
+    const errorTypes = {
+        1: "Permission denied",
+        2: "Position unavailable",
+        3: "Timeout"
+    };
+    const errorMessage = errorTypes[error.code] || "Unknown error";
+    webApp.showAlert(`Geolocation error: ${errorMessage}`);
+    console.error(`Geolocation error (${error.code}): ${errorMessage}`);
 }
 
 // Update statistics based on the new position
@@ -95,7 +120,7 @@ function updateStats(newPosition) {
         distance += distanceIncrement;
         document.getElementById('distance').innerText = distance.toFixed(2);
 
-        const elapsedMinutes = (new Date().getTime() - startTime) / 60000;
+        const elapsedMinutes = (Date.now() - startTime) / 60000;
         const speed = distance / elapsedMinutes;
         document.getElementById('speed').innerText = speed.toFixed(2);
 
@@ -176,15 +201,42 @@ function buyItem(item) {
     // Custom logic for purchasing items
 }
 
-// Go to home section
-function goHome() {
-    // Logic to return to the "home" section from any other section
+// Show home section and hide others
+function showHome() {
     document.querySelectorAll('div[id]').forEach(div => div.style.display = 'none');
     document.getElementById('home').style.display = 'block';
 }
 
+function attachEventListeners() {
+    const startButton = document.getElementById('startButton');
+    const stopButton = document.getElementById('stopButton');
+
+    if (startButton) {
+        startButton.addEventListener('click', startTracking);
+    } else {
+        console.error('"startButton" not found in the DOM.');
+    }
+
+    if (stopButton) {
+        stopButton.addEventListener('click', stopTracking);
+    } else {
+        console.error('"stopButton" not found in the DOM.');
+    }
+
+    document.querySelectorAll('.sneaker-type').forEach(el => {
+        el.addEventListener('click', function() {
+            selectSneakerType(this.dataset.type);
+        });
+    });
+
+    document.querySelectorAll('.mode-select').forEach(el => {
+        el.addEventListener('click', function() {
+            selectActivityMode(this.dataset.mode);
+        });
+    });
+}
+
 window.onload = function() {
     initMap();
-    document.getElementById('home').style.display = 'block';
+    attachEventListeners();
 };
-``
