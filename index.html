@@ -6,9 +6,70 @@
     <title>Fitness Tracker App</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://your-custom-domain-or-path/telegram-webapp.js"></script>
     <style>
-        /* Your existing CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sneaker-type, .mode-select, .menu-item, .dapp-card button {
+            display: block;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        
+        .active {
+            background-color: #0056b3;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+        }
+
+        .progress {
+            width: 0;
+            height: 20px;
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            border-radius: 5px;
+        }
+        
+        #map {
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .dapp-card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .dapp-card h4 {
+            margin: 0 0 10px;
+        }
+
     </style>
 </head>
 <body>
@@ -27,7 +88,7 @@
         <div class="mode-select" onclick="selectActivityMode('Running')">Running</div>
         <div class="mode-select" onclick="selectActivityMode('Group Running')">Group Running</div>
         <div class="mode-select" onclick="selectActivityMode('Cycling')">Cycling</div>
-        
+
         <h2>Start Tracking</h2>
         <button onclick="startTracking()">Start</button>
         <button onclick="stopTracking()">Stop</button>
@@ -44,7 +105,7 @@
 
         <h2>Daily Goal Progress</h2>
         <div class="progress-bar">
-            <div id="progressBar" class="progress">0%</</div>
+            <div id="progressBar" class="progress">0%</div>
         </div>
 
         <h2>Related Dapps</h2>
@@ -61,7 +122,53 @@
             </div>
         </div>
     </div>
+
+    <div id="challenges" style="display:none;">
+        <h2>Challenges</h2>
+        <button class="menu-item" onclick="joinChallenge('5km Walk')">Join 5km Walk</button>
+        <button class="menu-item" onclick="joinChallenge('10km Run')">Join 10km Run</button>
+        <button class="menu-item" onclick="goHome()">Home</button>
+    </div>
+
+    <div id="rewards" style="display:none;">
+        <h2>Rewards</h2>
+        <p>Score: <span id="score">0</span></p>
+        <button class="menu-item" onclick="claimReward(50)">Claim 50 Points</button>
+        <button class="menu-item" onclick="claimReward(100)">Claim 100 Points</button>
+        <button class="menu-item" onclick="goHome()">Home</button>
+    </div>
+
+    <div id="invite" style="display:none;">
+        <h2>Invite Friends</h2>
+        <input type="text" id="inviteLink" value="http://example.com/invite" readonly>
+        <button class="menu-item" onclick="copyInviteLink()">Copy Link</button>
+        <button class="menu-item" onclick="goHome()">Home</button>
+    </div>
+
+    <div id="stats" style="display:none;">
+        <h2>Weekly Stats</h2>
+        <!-- Stats content here -->
+        <button class="menu-item" onclick="goHome()">Home</button>
+    </div>
+
+    <div id="levelUp" style="display:none;">
+        <h2>Level Up</h2>
+        <p>Current Level: <span id="currentLevel">0</span></p>
+        <p>GST Required: <span id="gstRequired">0</span></p>
+        <p>GMT Required: <span id="gmtRequired">0</span></p>
+        <button class="menu-item" onclick="levelUp()">Level Up</button>
+        <button class="menu-item" onclick="goHome()">Home</button>
+    </div>
+
+    <div id="shop" style="display:none;">
+        <h2>Shop</h2>
+        <button class="menu-item" onclick="buyItem('Sneaker Box')">Buy Sneaker Box</button>
+        <button class="menu-item" onclick="buyItem('Gem')">Buy Gem</button>
+        <button class="menu-item" onclick="goHome()">Home</button>
+    </div>
+
 </div>
+
 <script src="scripts.js"></script>
 </body>
 </html>
