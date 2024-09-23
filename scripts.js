@@ -207,6 +207,7 @@ function showHome() {
     document.getElementById('home').style.display = 'block';
 }
 
+// Function to attach event listeners
 function attachEventListeners() {
     const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
