@@ -66,6 +66,7 @@
     <!-- Home Section -->
     <div id="home">
       <h2>Fitness Tracker</h2>
+      <!-- Sneaker Type Selection -->
       <div>
         <h3>Select Sneaker Type</h3>
         <div class="sneaker-type" data-type="Walker">Walker</div>
@@ -73,6 +74,7 @@
         <div class="sneaker-type" data-type="Runner">Runner</div>
         <div class="sneaker-type" data-type="Trainer">Trainer</div>
       </div>
+      <!-- Activity Mode Selection -->
       <div>
         <h3>Select Activity Mode</h3>
         <div class="mode-select" data-mode="Walking">Walking</div>
@@ -80,8 +82,10 @@
         <div class="mode-select" data-mode="Group Running">Group Running</div>
         <div class="mode-select" data-mode="Cycling">Cycling</div>
       </div>
+      <!-- Tracking Buttons -->
       <button id="startButton">Start Tracking</button>
       <button id="stopButton">Stop Tracking</button>
+      <!-- Statistics Display -->
       <div>
         <h3>Statistics</h3>
         <p>Distance: <span id="distance">0</span> km</p>
@@ -89,7 +93,31 @@
         <p>GST: <span id="gst">0</span></p>
         <p>Energy: <span id="energy">10</span></p>
       </div>
+      <!-- Map Display -->
       <div id="map"></div>
+      <!-- Explore dApps Button -->
+      <button onclick="showDApps()">Explore dApps</button>
+    </div>
+
+    <!-- dApp Section -->
+    <div id="dapp-section" style="display: none;">
+      <h2>Explore dApps</h2>
+      <p>Check out these mini apps built on the TON Blockchain:</p>
+      <ul>
+        <li>
+          <a href="https://ton.app/" target="_blank">TON Wallet</a> - A wallet for managing your TON assets.
+        </li>
+        <li>
+          <a href="https://tonexplorer.com/" target="_blank">TON Explorer</a> - Explore transactions and contract events on the TON blockchain.
+        </li>
+        <li>
+          <a href="https://ton.ton.org/" target="_blank">TON Browser</a> - A browser to interact with dApps on the TON platform.
+        </li>
+        <li>
+          <a href="https://ton.site/" target="_blank">TON Site</a> - The official site for all developments and news regarding TON.
+        </li>
+      </ul>
+      <button onclick="showHome()">Back to Home</button>
     </div>
   </div>
 
