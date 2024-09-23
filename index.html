@@ -1,174 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fitness Tracker App</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .sneaker-type, .mode-select, .menu-item, .dapp-card button {
-            display: block;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #007bff;
-            color: #fff;
-            text-align: center;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-        }
-        
-        .active {
-            background-color: #0056b3;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            background-color: #ddd;
-            border-radius: 5px;
-        }
-
-        .progress {
-            width: 0;
-            height: 20px;
-            background-color: #4caf50;
-            text-align: center;
-            line-height: 20px;
-            color: white;
-            border-radius: 5px;
-        }
-        
-        #map {
-            height: 300px;
-            margin-top: 20px;
-        }
-
-        .dapp-card {
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .dapp-card h4 {
-            margin: 0 0 10px;
-        }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitness Tracker App</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <!-- Telegram Web App Script -->
+  <script src="https://core.telegram.org/js/telegram-web-app.js"></script>
+  <!-- Styles for the app -->
+  <style>
+    /* Basic CSS for the app */
+    body {
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    /* Styles for main interaction buttons */
+    button {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      text-align: center;
+    }
+    button:disabled {
+      background-color: #c0c0c0;
+    }
+    .sneaker-type, .mode-select {
+      cursor: pointer;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      text-align: center;
+      margin: 10px 0;
+    }
+    .sneaker-type.active, .mode-select.active {
+      background-color: #007bff;
+      color: white;
+    }
+    /* Styles for map */
+    #map {
+      height: 300px;
+    }
+    /* Hidden sections setup */
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-    <h1>Fitness Tracker App</h1>
-
+  <div class="container">
+    <!-- Home Section -->
     <div id="home">
-        <h2>Select Sneaker Type</h2>
-        <div class="sneaker-type" onclick="selectSneakerType('Walker')">Walker</div>
-        <div class="sneaker-type" onclick="selectSneakerType('Jogger')">Jogger</div>
-        <div class="sneaker-type" onclick="selectSneakerType('Runner')">Runner</div>
-        <div class="sneaker-type" onclick="selectSneakerType('Trainer')">Trainer</div>
-
-        <h2>Select Activity Mode</h2>
-        <div class="mode-select" onclick="selectActivityMode('Walking')">Walking</div>
-        <div class="mode-select" onclick="selectActivityMode('Running')">Running</div>
-        <div class="mode-select" onclick="selectActivityMode('Group Running')">Group Running</div>
-        <div class="mode-select" onclick="selectActivityMode('Cycling')">Cycling</div>
-
-        <h2>Start Tracking</h2>
-        <button onclick="startTracking()">Start</button>
-        <button onclick="stopTracking()">Stop</button>
-
-        <div id="stats">
-            <p>Distance: <span id="distance">0</span> km</p>
-            <p>Speed: <span id="speed">0</span> km/h</p>
-            <p>GST: <span id="gst">0</span></p>
-            <p>GMT: <span id="gmt">0</span></p>
-            <p>Energy: <span id="energy">10</span></p>
-        </div>
-
-        <div id="map"></div>
-
-        <h2>Daily Goal Progress</h2>
-        <div class="progress-bar">
-            <div id="progressBar" class="progress">0%</div>
-        </div>
-
-        <h2>Related Dapps</h2>
-        <div class="dapp-section">
-            <div class="dapp-card">
-                <h4>Dapp #1</h4>
-                <p>Description of Dapp #1.</p>
-                <button onclick="openDapp('link-to-dapp1')">Open Dapp</button>
-            </div>
-            <div class="dapp-card">
-                <h4>Dapp #2</h4>
-                <p>Description of Dapp #2.</p>
-                <button onclick="openDapp('link-to-dapp2')">Open Dapp</button>
-            </div>
-        </div>
+      <h2>Fitness Tracker</h2>
+      <div>
+        <h3>Select Sneaker Type</h3>
+        <div class="sneaker-type" data-type="Walker">Walker</div>
+        <div class="sneaker-type" data-type="Jogger">Jogger</div>
+        <div class="sneaker-type" data-type="Runner">Runner</div>
+        <div class="sneaker-type" data-type="Trainer">Trainer</div>
+      </div>
+      <div>
+        <h3>Select Activity Mode</h3>
+        <div class="mode-select" data-mode="Walking">Walking</div>
+        <div class="mode-select" data-mode="Running">Running</div>
+        <div class="mode-select" data-mode="Group Running">Group Running</div>
+        <div class="mode-select" data-mode="Cycling">Cycling</div>
+      </div>
+      <button id="startButton">Start Tracking</button>
+      <button id="stopButton">Stop Tracking</button>
+      <div>
+        <h3>Statistics</h3>
+        <p>Distance: <span id="distance">0</span> km</p>
+        <p>Speed: <span id="speed">0</span> km/h</p>
+        <p>GST: <span id="gst">0</span></p>
+        <p>Energy: <span id="energy">10</span></p>
+      </div>
+      <div id="map"></div>
     </div>
+  </div>
 
-    <div id="challenges" style="display:none;">
-        <h2>Challenges</h2>
-        <button class="menu-item" onclick="joinChallenge('5km Walk')">Join 5km Walk</button>
-        <button class="menu-item" onclick="joinChallenge('10km Run')">Join 10km Run</button>
-        <button class="menu-item" onclick="goHome()">Home</button>
-    </div>
-
-    <div id="rewards" style="display:none;">
-        <h2>Rewards</h2>
-        <p>Score: <span id="score">0</span></p>
-        <button class="menu-item" onclick="claimReward(50)">Claim 50 Points</button>
-        <button class="menu-item" onclick="claimReward(100)">Claim 100 Points</button>
-        <button class="menu-item" onclick="goHome()">Home</button>
-    </div>
-
-    <div id="invite" style="display:none;">
-        <h2>Invite Friends</h2>
-        <input type="text" id="inviteLink" value="http://example.com/invite" readonly>
-        <button class="menu-item" onclick="copyInviteLink()">Copy Link</button>
-        <button class="menu-item" onclick="goHome()">Home</button>
-    </div>
-
-    <div id="stats" style="display:none;">
-        <h2>Weekly Stats</h2>
-        <!-- Stats content here -->
-        <button class="menu-item" onclick="goHome()">Home</button>
-    </div>
-
-    <div id="levelUp" style="display:none;">
-        <h2>Level Up</h2>
-        <p>Current Level: <span id="currentLevel">0</span></p>
-        <p>GST Required: <span id="gstRequired">0</span></p>
-        <p>GMT Required: <span id="gmtRequired">0</span></p>
-        <button class="menu-item" onclick="levelUp()">Level Up</button>
-        <button class="menu-item" onclick="goHome()">Home</button>
-    </div>
-
-    <div id="shop" style="display:none;">
-        <h2>Shop</h2>
-        <button class="menu-item" onclick="buyItem('Sneaker Box')">Buy Sneaker Box</button>
-        <button class="menu-item" onclick="buyItem('Gem')">Buy Gem</button>
-        <button class="menu-item" onclick="goHome()">Home</button>
-    </div>
-
-</div>
-
-<script src="scripts.js"></script>
+  <!-- Include JavaScript at the end of the body -->
+  <script src="scripts.js"></script>
 </body>
 </html>
