@@ -4,30 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fitness Tracker App</title>
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <!-- Telegram Web App Script -->
   <script src="https://core.telegram.org/js/telegram-web-app.js"></script>
-  <!-- Styles for the app -->
   <style>
-    /* Basic CSS for the app */
     body {
       background-color: #f0f0f0;
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
     }
     .container {
-      background-color: #fff;
+      max-width: 800px;
+      margin: 20px auto;
       padding: 20px;
-      border-radius: 8px;
+      background-color: #fff;
+      border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    /* Styles for main interaction buttons */
     button {
-      display: inline-block;
-      margin: 10px;
-      padding: 10px 20px;
+      display: block;
+      width: 100%;
+      margin: 10px auto;
+      padding: 10px;
       font-size: 16px;
       cursor: pointer;
       border: none;
@@ -39,39 +38,38 @@
     button:disabled {
       background-color: #c0c0c0;
     }
+    button.secondary {
+      background-color: #555;
+    }
     .sneaker-type, .mode-select {
-      cursor: pointer;
+      display: inline-block;
+      width: 22%;
+      margin: 0 1%;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
       text-align: center;
-      margin: 10px 0;
+      cursor: pointer;
     }
     .sneaker-type.active, .mode-select.active {
       background-color: #007bff;
       color: white;
     }
-  /* ... existing styles ... */
-  #progress-container {
-    background: #e0e0e0;
-    border-radius: 50px;
-    padding: 5px;
-    width: 100%;
-    margin: 10px 0;
-  }
-  #progress-bar {
-    background: #76c7c0;
-    width: 0;
-    height: 20px;
-    border-radius: 50px;
-  }
-    /* Styles for map */
     #map {
       height: 300px;
+      margin-top: 15px;
     }
-    /* Hidden sections setup */
-    .hidden {
-      display: none;
+    #progress-container {
+      background: #e0e0e0;
+      border-radius: 25px;
+      padding: 5px;
+      margin-top: 15px;
+    }
+    #progress-bar {
+      background: #76c7c0;
+      width: 0;
+      height: 20px;
+      border-radius: 25px;
     }
   </style>
 </head>
@@ -98,7 +96,7 @@
       </div>
       <!-- Tracking Buttons -->
       <button id="startButton">Start Tracking</button>
-      <button id="stopButton">Stop Tracking</button>
+      <button id="stopButton" class="secondary">Stop Tracking</button>
       <!-- Statistics Display -->
       <div>
         <h3>Statistics</h3>
@@ -108,7 +106,7 @@
         <p>Energy: <span id="energy">10</span></p>
       </div>
       <!-- Map Display -->
-      <div id="map" style="height: 300px;"></div>
+      <div id="map"></div>
       <!-- Daily Goal Progress -->
       <div>
         <h3>Daily Goal Progress</h3>
@@ -119,7 +117,7 @@
       <!-- Explore dApps Button -->
       <button onclick="showDApps()">Explore dApps</button>
     </div>
-
+  
     <!-- dApp Section -->
     <div id="dapp-section" style="display: none;">
       <h2>Explore dApps</h2>
@@ -141,8 +139,6 @@
       <button onclick="showHome()">Back to Home</button>
     </div>
   </div>
-
-  <!-- Include JavaScript at the end of the body -->
   <script src="scripts.js"></script>
 </body>
 </html>
