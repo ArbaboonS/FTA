@@ -2,7 +2,6 @@
 let webApp = window.Telegram.WebApp;
 webApp.ready();
 
-// Application state
 let gst = 0;
 let gmt = 0;
 let energy = 10;
@@ -16,6 +15,8 @@ let startTime;
 let distance = 0;
 let lastPosition;
 let score = 0;
+let zones = [];
+const dailyGoal = 10; // 10 km daily goal
 
 const sneakerTypes = {
     Walker: { optimalSpeed: { min: 1, max: 6 }, gstReturn: 4 },
@@ -24,62 +25,130 @@ const sneakerTypes = {
     Trainer: { optimalSpeed: { min: 1, max: 20 }, gstReturn: 5.5 }
 };
 
-// Function to show the dApp section
-function showDApps() {
-    document.getElementById('home').style.display = 'none';
-    document.getElementById('dapp-section').style.display = 'block';
-    document.getElementById('map').style.display = 'none';
-}
-
-// Function to show home section and hide others
-let zones = [];
-const dailyGoal = 10; // 10 km daily goal
-
 function showHome() {
     document.getElementById('dapp-section').style.display = 'none';
     document.getElementById('home').style.display = 'block';
-    initMap(); // Reinitialize the map
-    updateProgressBar(); // Update progress bar
+    if (map) {
+        map.invalidateSize();
+        if (lastPosition) {
+            map.setView(lastPosition, 15);
+        }
+    }
+    updateProgressBar();
 }
 
-// Function to initialize the map
+function showDApps() {
+    document.getElementById('home').style.display = 'none';
+    document.getElementById('dapp-section').style.display = 'block';
+}
+
+// Initialize the map with zones
 function initMap() {
-    if (typeof(L) === 'undefined') {
-        console.error('Leaflet library is not loaded.');
-        return;
-    }
-    const mapElement = document.getElementById('map');
-    if (!mapElement) {
-        console.error('"map" element not found in the DOM.');
-        return;
-    }
-    map = L.map('map').setView([0, 0], 15);
+    map = L.map('map').setView([0, 0], 2);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
-    addZones(); // Add zones around the user's location
-    console.log('Map initialized.');
+    addZones([0, 0]);
 }
 
-// Function to add zones around the user
-function addZones() {
-    // Clear existing zones
+function startTracking() {
+    if (!navigator.geolocation) {
+        webApp.showAlert("Geolocation is not supported by this browser.");
+        return;
+    }
+    webApp.showAlert("Tracking started");
+    startTime = Date.now();
+    watchId = navigator.geolocation.watchPosition(
+        geoSuccess,
+        geoError,
+        { enableHighAccuracy: true, maximumAge: 1000, timeout: 5000 }
+    );
+}
+
+function stopTracking() {
+    if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        webApp.showAlert("Tracking stopped");
+    } else {
+        webApp.showAlert("No tracking to stop");
+    }
+}
+
+function geoSuccess(position) {
+    const { latitude, longitude } = position.coords;
+    const newPosition = [latitude, longitude];
+    if (!marker) {
+        marker = L.marker(newPosition).addTo(map);
+    } else {
+        marker.setLatLng(newPosition);
+    }
+    map.setView(newPosition, 15);
+    updateStats(newPosition);
+    addZones(newPosition);
+    lastPosition = newPosition;
+}
+
+function geoError(error) {
+    const errorMessages = {
+        1: "Permission denied",
+        2: "Position unavailable",
+        3: "Timeout"
+    };
+    const errorMessage = errorMessages[error.code] || "Unknown error";
+    webApp.showAlert(`Geolocation error: ${errorMessage}`);
+    console.error(`Geolocation error (${error.code}): ${errorMessage}`);
+}
+
+function updateStats(newPosition) {
+    if (lastPosition) {
+        const distanceIncrement = calculateDistance(lastPosition, newPosition);
+        distance += distanceIncrement;
+        document.getElementById('distance').innerText = distance.toFixed(2);
+
+        const elapsedMinutes = (Date.now() - startTime) / 60000;
+        const speed = distance / elapsedMinutes;
+        document.getElementById('speed').innerText = speed.toFixed(2);
+
+        const gstIncrement = sneakerTypes[sneakerType].gstReturn * distanceIncrement;
+        gst += gstIncrement;
+        document.getElementById('gst').innerText = gst.toFixed(2);
+    }
+    lastPosition = newPosition;
+    updateProgressBar();
+}
+
+function calculateDistance(start, end) {
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(end[0] - start[0]);
+    const dLon = deg2rad(end[1] - start[1]);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(start[0])) * Math.cos(deg2rad(end[0])) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+function deg2rad(deg) {
+    return deg * (Math.PI / 180);
+}
+
+// Add zones based on the user's current location
+function addZones(position) {
     zones.forEach(zone => map.removeLayer(zone));
     zones = [];
 
-    // Assume we get the user's position (latitude and longitude)
-    const userLat = 35.6895; // Example latitude
-    const userLng = 139.6917; // Example longitude
-
-    // Add zones around the user
-    const zone1 = L.circle([userLat, userLng], {radius: 500}).addTo(map);
-    const zone2 = L.circle([userLat + 0.01, userLng + 0.01], {radius: 1000}).addTo(map);
-    const zone3 = L.circle([userLat + 0.02, userLng - 0.01], {radius: 2000}).addTo(map);
-
-    zones.push(zone1, zone2, zone3);
+    // Define zone radii in meters
+    const zoneRadii = [500, 1000, 2000];
+    zoneRadii.forEach(radius => {
+        const zone = L.circle(position, { radius: radius, color: 'blue', fillColor: '#30f', fillOpacity: 0.2 });
+        zone.addTo(map);
+        zones.push(zone);
+    });
 }
 
-// Function to update the progress in the progress bar
+// Update the progress bar based on the distance travelled
 function updateProgressBar() {
     const progressPercentage = (distance / dailyGoal) * 100;
     document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
@@ -88,30 +157,33 @@ function updateProgressBar() {
     }
 }
 
-// Successfully retrieved user position
-function geoSuccess(position) {
-    const { latitude, longitude } = position.coords;
-    const newPosition = [latitude, longitude];
-
-    if (!marker) {
-        marker = L.marker(newPosition).addTo(map);
-    } else {
-        marker.setLatLng(newPosition);
-    }
-
-    map.setView(newPosition, 15);
-    updateStats(newPosition);
-    addZones(); // Re-add zones to map on position change
-}
-
-// Function to update statistics
-function updateStats(newPosition) {
-    // Calculate distance and GST like previously
-    // Update the progress bar
+window.onload = function() {
+    initMap();
+    attachEventListeners();
     updateProgressBar();
+};
+
+// Function to attach event listeners to buttons and selections
+function attachEventListeners() {
+    // Attaching event listeners to sneaker type selection
+    document.querySelectorAll('.sneaker-type').forEach(el => {
+        el.addEventListener('click', function() {
+            selectSneakerType(this.dataset.type);
+        });
+    });
+
+    // Attaching event listeners to mode selection
+    document.querySelectorAll('.mode-select').forEach(el => {
+        el.addEventListener('click', function() {
+            selectActivityMode(this.dataset.mode);
+        });
+    });
+
+    // Attaching event listeners to start and stop buttons
+    document.getElementById('startButton').addEventListener('click', startTracking);
+    document.getElementById('stopButton').addEventListener('click', stopTracking);
 }
 
-// Select sneaker type and highlight the chosen type
 function selectSneakerType(type) {
     sneakerType = type;
     document.querySelectorAll('.sneaker-type').forEach(el => el.classList.remove('active'));
