@@ -12,47 +12,71 @@
   background: linear-gradient(135deg, #272A8A, #000000);
   color: #FFFFFF;
   font-family: 'Sama Tamil', sans-serif;
+  margin: 0;
+  padding: 0;
 }
-    .card {
+
+.container {
+  max-width: 960px; /* Adjust width as needed */
+  margin: 20px auto;
+  padding: 20px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  margin: 10px 0;
-  padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
-    h1, h2, h3 {
-  font-weight: bold;
+
+.button {
+  border: none;
+  border-radius: 8px;
+  background-color: #4CAF50;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  text-align: center;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
-.stats {
-  font-size: 1.2em;
+
+.button:hover {
+  background-color: #45a049;
 }
-    .container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    button {
-      display: block;
-      width: 100%;
-      margin: 10px auto;
-      padding: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-      background-color: #007bff;
-      color: white;
-      text-align: center;
-    }
-    button:disabled {
-      background-color: #c0c0c0;
-    }
-    button.secondary {
-      background-color: #555;
-    }
+
+.progress-circle {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: inline-block;
+  margin: 15px;
+}
+
+.progress-circle svg {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke-width: 10;
+}
+
+.progress-circle circle {
+  stroke: rgba(255, 255, 255, 0.2);
+}
+
+.progress-circle .progress {
+  stroke: #FFAA00; /* Change to desired progress color */
+  stroke-dasharray: 283;
+  stroke-dashoffset: 75;
+  transition: stroke-dashoffset 0.35s;
+}
+
+.progress-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  color: #FFFFFF;
+}
     .sneaker-type, .mode-select {
       display: inline-block;
       width: 22%;
@@ -77,12 +101,13 @@
       padding: 5px;
       margin-top: 15px;
     }
-    #progress-bar {
-      background: #76c7c0;
-      width: 0;
-      height: 20px;
-      border-radius: 25px;
-    }
+    <div class="progress-circle">
+  <svg viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="45" />
+    <circle cx="50" cy="50" r="45" class="progress" />
+  </svg>
+  <div class="progress-value">7,356 Steps</div>
+</div>
   </style>
 </head>
 <body>
