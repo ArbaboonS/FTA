@@ -28,13 +28,18 @@ const sneakerTypes = {
 function showDApps() {
     document.getElementById('home').style.display = 'none';
     document.getElementById('dapp-section').style.display = 'block';
+    document.getElementById('map').style.display = 'none';
 }
 
 // Function to show home section and hide others
+let zones = [];
+const dailyGoal = 10; // 10 km daily goal
+
 function showHome() {
     document.getElementById('dapp-section').style.display = 'none';
-    document.querySelectorAll('div[id]').forEach(div => div.style.display = 'none');
     document.getElementById('home').style.display = 'block';
+    initMap(); // Reinitialize the map
+    updateProgressBar(); // Update progress bar
 }
 
 // Function to initialize the map
@@ -48,11 +53,62 @@ function initMap() {
         console.error('"map" element not found in the DOM.');
         return;
     }
-    map = L.map('map').setView([0, 0], 2);
+    map = L.map('map').setView([0, 0], 15);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
+    addZones(); // Add zones around the user's location
     console.log('Map initialized.');
+}
+
+// Function to add zones around the user
+function addZones() {
+    // Clear existing zones
+    zones.forEach(zone => map.removeLayer(zone));
+    zones = [];
+
+    // Assume we get the user's position (latitude and longitude)
+    const userLat = 35.6895; // Example latitude
+    const userLng = 139.6917; // Example longitude
+
+    // Add zones around the user
+    const zone1 = L.circle([userLat, userLng], {radius: 500}).addTo(map);
+    const zone2 = L.circle([userLat + 0.01, userLng + 0.01], {radius: 1000}).addTo(map);
+    const zone3 = L.circle([userLat + 0.02, userLng - 0.01], {radius: 2000}).addTo(map);
+
+    zones.push(zone1, zone2, zone3);
+}
+
+// Function to update the progress in the progress bar
+function updateProgressBar() {
+    const progressPercentage = (distance / dailyGoal) * 100;
+    document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+    if (progressPercentage >= 100) {
+        webApp.showAlert('Daily goal achieved! Good job!');
+    }
+}
+
+// Successfully retrieved user position
+function geoSuccess(position) {
+    const { latitude, longitude } = position.coords;
+    const newPosition = [latitude, longitude];
+
+    if (!marker) {
+        marker = L.marker(newPosition).addTo(map);
+    } else {
+        marker.setLatLng(newPosition);
+    }
+
+    map.setView(newPosition, 15);
+    updateStats(newPosition);
+    addZones(); // Re-add zones to map on position change
+}
+
+// Function to update statistics
+function updateStats(newPosition) {
+    // Calculate distance and GST like previously
+    // Update the progress bar
+    updateProgressBar();
 }
 
 // Select sneaker type and highlight the chosen type
@@ -250,7 +306,9 @@ function attachEventListeners() {
     });
 }
 
+// Initialize app on page load
 window.onload = function() {
     initMap();
     attachEventListeners();
+    updateProgressBar(); // Initialize progress bar (if not zero)
 };
