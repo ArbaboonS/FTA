@@ -24,6 +24,19 @@ const sneakerTypes = {
     Trainer: { optimalSpeed: { min: 1, max: 20 }, gstReturn: 5.5 }
 };
 
+// Function to show the dApp section
+function showDApps() {
+    document.getElementById('home').style.display = 'none';
+    document.getElementById('dapp-section').style.display = 'block';
+}
+
+// Function to show home section and hide others
+function showHome() {
+    document.getElementById('dapp-section').style.display = 'none';
+    document.querySelectorAll('div[id]').forEach(div => div.style.display = 'none');
+    document.getElementById('home').style.display = 'block';
+}
+
 // Function to initialize the map
 function initMap() {
     if (typeof(L) === 'undefined') {
