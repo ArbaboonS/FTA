@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Tracker App</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://your-custom-domain-or-path/telegram-webapp.js"></script>
+    <style>
+        /* Your existing CSS styles */
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Fitness Tracker App</h1>
+
+    <div id="home">
+        <h2>Select Sneaker Type</h2>
+        <div class="sneaker-type" onclick="selectSneakerType('Walker')">Walker</div>
+        <div class="sneaker-type" onclick="selectSneakerType('Jogger')">Jogger</div>
+        <div class="sneaker-type" onclick="selectSneakerType('Runner')">Runner</div>
+        <div class="sneaker-type" onclick="selectSneakerType('Trainer')">Trainer</div>
+
+        <h2>Select Activity Mode</h2>
+        <div class="mode-select" onclick="selectActivityMode('Walking')">Walking</div>
+        <div class="mode-select" onclick="selectActivityMode('Running')">Running</div>
+        <div class="mode-select" onclick="selectActivityMode('Group Running')">Group Running</div>
+        <div class="mode-select" onclick="selectActivityMode('Cycling')">Cycling</div>
+        
+        <h2>Start Tracking</h2>
+        <button onclick="startTracking()">Start</button>
+        <button onclick="stopTracking()">Stop</button>
+
+        <div id="stats">
+            <p>Distance: <span id="distance">0</span> km</p>
+            <p>Speed: <span id="speed">0</span> km/h</p>
+            <p>GST: <span id="gst">0</span></p>
+            <p>GMT: <span id="gmt">0</span></p>
+            <p>Energy: <span id="energy">10</span></p>
+        </div>
+
+        <div id="map"></div>
+
+        <h2>Daily Goal Progress</h2>
+        <div class="progress-bar">
+            <div id="progressBar" class="progress">0%</</div>
+        </div>
+
+        <h2>Related Dapps</h2>
+        <div class="dapp-section">
+            <div class="dapp-card">
+                <h4>Dapp #1</h4>
+                <p>Description of Dapp #1.</p>
+                <button onclick="openDapp('link-to-dapp1')">Open Dapp</button>
+            </div>
+            <div class="dapp-card">
+                <h4>Dapp #2</h4>
+                <p>Description of Dapp #2.</p>
+                <button onclick="openDapp('link-to-dapp2')">Open Dapp</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="scripts.js"></script>
+</body>
+</html>
